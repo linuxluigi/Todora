@@ -63,7 +63,7 @@ function addCard(id, cardContent) {
     var title = cardContent["title"];
 
     $(".todora-content").append("" +
-        "<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3 center post-"+id+"\">\n" +
+        "<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3 center post-" + id + "\">\n" +
         "        <div class=\"post-it post-it-" + color + "\">\n" +
         "            <div class=\"row\">\n" +
         "                <p class=\"post-it-title\">" + title + "</p>\n" +
@@ -103,7 +103,7 @@ function addCard(id, cardContent) {
         "                    </a>\n" +
         "                </div>\n" +
         "                <div class=\"col-xs-6 center\">\n" +
-        "                    <a href=\"#\" class=\"btn btn-danger\">\n" +
+        "                    <a href=\"#\" id=\"delete-single-card-" + id + "\" class=\"btn btn-danger\">\n" +
         "                        <span class=\"glyphicon glyphicon-minus\"></span> DELETE\n" +
         "                    </a>\n" +
         "                </div>\n" +
@@ -112,6 +112,8 @@ function addCard(id, cardContent) {
         "    </div>"
     );
 
+    // add button function
+    createDelButton(id);
 }
 
 // create mutiple cards
@@ -121,6 +123,20 @@ function createMutipleCards() {
     }
 }
 
+// delete single card
+function deleteSingleCard(key) {
+    return function () {
+        // remove single card
+        $(".post-" + key).remove();
+
+        // delete card entry from mainData & save it to local storage
+        delete mainData[key];
+        saveContents();
+    }
+}
+
+// Button area
+
 // reset all list & create 1 single card
 $("#reset-list").click(function () {
     // delete local storage
@@ -128,7 +144,7 @@ $("#reset-list").click(function () {
 
     // remove all cards
     for (key in mainData) {
-        $( ".post-" + key ).remove();
+        $(".post-" + key).remove();
     }
 
     // create default mainData
@@ -148,13 +164,18 @@ $("#add-list").click(function () {
         items: {},
     };
 
-    // last item of mainData
-    var last_item = null;
-    for (key in mainData) {
-        last_item = key;
+    if (Object.keys(mainData).length == 0) {
+        var nextKey = 0;
+    } else {
+        // last item of mainData
+        var last_item = null;
+        for (key in mainData) {
+            last_item = key;
+        }
+
+        var nextKey = parseInt(key) + 1;
     }
 
-    var nextKey = parseInt(key) + 1;
     mainData[nextKey] = cardContent;
 
     // add new card with a default value
@@ -163,6 +184,14 @@ $("#add-list").click(function () {
     saveContents();
 });
 
+// single card list delete button
+function createDelButton(key) {
+    $(document).ready(function () {
+        $('#delete-single-card-' + key).click(deleteSingleCard(key));
+    });
+}
+
+// run at script start
 
 // create cards with saved content
 createMutipleCards();
