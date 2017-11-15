@@ -1,38 +1,72 @@
-// add list
-$("#add-list").click(function () {
+// restore mainData from localStorage
+var mainData = localStorage.getItem('todoraMainData');
 
-    // generate random color
+// if localStorage was empty, create a new default mainData
+if (mainData == undefined) {
+    createDefaultData();
+} else {
+    // pare json
+    mainData = JSON.parse(mainData);
+}
+
+// save mainData in local storage
+function saveContents() {
+    localStorage.setItem('todoraMainData', JSON.stringify(mainData));
+}
+
+// fill mainData with the default value
+function createDefaultData() {
+    mainData = {
+        0: {
+            color: "green",
+            title: "Shopping",
+            items: {
+                0: {
+                    value: "Food",
+                    done: false,
+                },
+                1: {
+                    value: "Food",
+                    done: true,
+                },
+            }
+        },
+    };
+}
+
+// create random color
+function getRandomColor() {
+    // create random number
     const random = Math.floor((Math.random() * 6) + 1);
-    var color = "green";
 
-    console.log(random)
-
-    switch(random) {
+    // convert number into a color string
+    switch (random) {
         case 1:
-            color = "green";
-            break;
+            return "green";
         case 2:
-            color = "blue";
-            break;
+            return "blue";
         case 3:
-            color = "orange";
-            break;
+            return "orange";
         case 4:
-            color = "yellow";
-            break;
+            return "yellow";
         case 5:
-            color = "red";
-            break;
+            return "red";
         case 6:
-            color = "purple";
-            break;
+            return "purple";
     }
+}
+
+// create new card
+function addCard(id, cardContent) {
+
+    var color = cardContent["color"];
+    var title = cardContent["title"];
 
     $(".todora-content").append("" +
-        "<div id=\"post-1\" class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3 center\">\n" +
+        "<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3 center post-"+id+"\">\n" +
         "        <div class=\"post-it post-it-" + color + "\">\n" +
         "            <div class=\"row\">\n" +
-        "                <p class=\"post-it-title\">X-MAS</p>\n" +
+        "                <p class=\"post-it-title\">" + title + "</p>\n" +
         "            </div>\n" +
         "            <div class=\"row\">\n" +
         "                <ul class=\"post-it-list\">\n" +
@@ -77,4 +111,59 @@ $("#add-list").click(function () {
         "        </div>\n" +
         "    </div>"
     );
+
+}
+
+// create mutiple cards
+function createMutipleCards() {
+    for (key in mainData) {
+        addCard(key, mainData[key]);
+    }
+}
+
+// reset all list & create 1 single card
+$("#reset-list").click(function () {
+    // delete local storage
+    localStorage.removeItem("todoraMainData");
+
+    // remove all cards
+    for (key in mainData) {
+        $( ".post-" + key ).remove();
+    }
+
+    // create default mainData
+    createDefaultData();
+
+    // create a single card with the default mainData
+    createMutipleCards();
 });
+
+// add new empty card
+$("#add-list").click(function () {
+
+    // default value
+    var cardContent = {
+        color: getRandomColor(),
+        title: "ToDo List",
+        items: {},
+    };
+
+    // last item of mainData
+    var last_item = null;
+    for (key in mainData) {
+        last_item = key;
+    }
+
+    var nextKey = parseInt(key) + 1;
+    mainData[nextKey] = cardContent;
+
+    // add new card with a default value
+    addCard(nextKey, cardContent);
+
+    saveContents();
+});
+
+
+// create cards with saved content
+createMutipleCards();
+
