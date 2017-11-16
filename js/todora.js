@@ -19,16 +19,8 @@ function createDefaultData() {
     mainData = {
         0: {
             color: "green",
-            title: "Shopping",
+            title: "ToDo List",
             items: {
-                0: {
-                    value: "Food",
-                    done: false,
-                },
-                1: {
-                    value: "Food",
-                    done: true,
-                },
             }
         },
     };
@@ -63,75 +55,77 @@ function addCard(id, cardContent) {
     var title = cardContent["title"];
 
     $(".todora-content").append("" +
-        "<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3 center post-" + id + "\">\n" +
-        "        <div class=\"post-it post-it-" + color + "\">\n" +
-        "            <div class=\"row\">\n" +
-        "                <p class=\"post-it-title\">" + title + "</p>\n" +
-        "            </div>\n" +
-        "            <div class=\"row\">\n" +
-        "                <ul class=\"post-it-list\">\n" +
-        "                    <li>\n" +
-        "                        <div class=\"row\">\n" +
-        "                            <div class=\"col-xs-10\">\n" +
-        "                                <label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\">Option 1</label>\n" +
-        "                            </div>\n" +
-        "                            <div class=\"col-xs-2 center\">\n" +
-        "                                <button type=\"button\" class=\"close\" aria-label=\"Delete\">\n" +
-        "                                    <span aria-hidden=\"true\">&times;</span>\n" +
-        "                                </button>\n" +
-        "                            </div>\n" +
-        "                        </div>\n" +
-        "                    </li>\n" +
-        "                    <li>\n" +
-        "                        <div class=\"row\">\n" +
-        "                            <div class=\"col-xs-10\">\n" +
-        "                                <label class=\"checkbox-inline list-item-select\"><input type=\"checkbox\" value=\"\">Option 2</label>\n" +
-        "                            </div>\n" +
-        "                            <div class=\"col-xs-2 center\">\n" +
-        "                                <button type=\"button\" class=\"close\" aria-label=\"Delete\">\n" +
-        "                                    <span aria-hidden=\"true\">&times;</span>\n" +
-        "                                </button>\n" +
-        "                            </div>\n" +
-        "                        </div>\n" +
-        "                    </li>\n" +
-        "                </ul>\n" +
-        "            </div>\n" +
-        "            <div class=\"row\">\n" +
-        "                <div class=\"col-xs-6 center\">\n" +
-        "                    <a href=\"#\" class=\"btn btn-primary\">\n" +
-        "                        <span class=\"glyphicon glyphicon-plus\"></span> ADD\n" +
-        "                    </a>\n" +
-        "                </div>\n" +
-        "                <div class=\"col-xs-6 center\">\n" +
-        "                    <a href=\"#\" id=\"delete-single-card-" + id + "\" class=\"btn btn-danger\">\n" +
-        "                        <span class=\"glyphicon glyphicon-minus\"></span> DELETE\n" +
-        "                    </a>\n" +
-        "                </div>\n" +
-        "            </div>\n" +
+        "<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3 center post-it post-it-"+color+" post-" + id + "\">\n" +
+        "    <div class=\"row\">\n" +
+        "        <input class=\"post-it-title\" type=\"text\" value='" + title + "' id=\"input-title-" + id + "\">" +
+        "    </div>\n" +
+        "    <div class=\"row post-it-list post-card-" +id+ "\">" +
+        "    </div>\n" +
+        "    <div class=\"row\">\n" +
+        "        <div class=\"col-xs-6 center\">\n" +
+        "            <a href=\"#\" id='add-single-card-item-"+id+"' class=\"btn btn-primary\">\n" +
+        "                <span class=\"glyphicon glyphicon-plus\"></span> ADD\n" +
+        "            </a>\n" +
         "        </div>\n" +
-        "    </div>"
+        "        <div class=\"col-xs-6 center\">\n" +
+        "            <a href=\"#\" id=\"delete-single-card-" + id + "\" class=\"btn btn-danger\">\n" +
+        "                <span class=\"glyphicon glyphicon-minus\"></span> DELETE\n" +
+        "            </a>\n" +
+        "        </div>\n" +
+        "    </div>\n" +
+        "</div>"
     );
 
+    for (item in mainData[key]["items"]) {
+        addCardItem(key, item);
+    }
+
     // add button function
-    createDelButton(id);
+    deleteSingleCardButton(id);
+    updateSingleCardTitleButton(id);
+    addSingleCardItemButton(id);
+}
+
+// create card item
+function addCardItem(key, item) {
+    // item value
+    var value = mainData[key]["items"][item]["value"];
+
+    // if the item was checked
+    if (mainData[key]["items"][item]["done"]) {
+        var checked = "checked";
+        var itemSelect = "list-item-select";
+    } else {
+        var checked = "";
+        var itemSelect = "";
+    }
+
+    // vars for html id
+    var itemId = "card-" + key + "-item-" + item;
+    var updateItemId = "update-" + itemId;
+    var deleteItemId = "delete-" + itemId;
+    var valueItemId = "value-" + itemId;
+
+    $(".post-card-"+key).append("" +
+        "<div class='row "+itemId+"'>" +
+        "    <label class='item-entry' class='"+itemSelect+"'>" +
+        "        <input id='"+updateItemId+"' type=\"checkbox\" "+checked+"> " +
+        "        <input id='"+valueItemId+"' class='post-it-title "+itemSelect+"' type='text' value='"+value+"'>" +
+        "     </label>" +
+        "     <span id='"+deleteItemId+"' class=\"glyphicon glyphicon-remove-circle item-entry-delete\" aria-hidden=\"true\"></span>" +
+        "</div>"
+    );
+
+    // add buttons function
+    updateCardItemButton(key, item);
+    deleteCardItemButton(key, item);
+    updateSingleCardItemTitleButton(key, item);
 }
 
 // create mutiple cards
 function createMutipleCards() {
     for (key in mainData) {
         addCard(key, mainData[key]);
-    }
-}
-
-// delete single card
-function deleteSingleCard(key) {
-    return function () {
-        // remove single card
-        $(".post-" + key).remove();
-
-        // delete card entry from mainData & save it to local storage
-        delete mainData[key];
-        saveContents();
     }
 }
 
@@ -161,7 +155,8 @@ $("#add-list").click(function () {
     var cardContent = {
         color: getRandomColor(),
         title: "ToDo List",
-        items: {},
+        items: {
+        },
     };
 
     if (Object.keys(mainData).length == 0) {
@@ -176,6 +171,7 @@ $("#add-list").click(function () {
         var nextKey = parseInt(key) + 1;
     }
 
+
     mainData[nextKey] = cardContent;
 
     // add new card with a default value
@@ -185,14 +181,152 @@ $("#add-list").click(function () {
 });
 
 // single card list delete button
-function createDelButton(key) {
+function deleteSingleCardButton(key) {
     $(document).ready(function () {
         $('#delete-single-card-' + key).click(deleteSingleCard(key));
     });
 }
 
+function deleteSingleCard(key) {
+    return function () {
+        // remove single card
+        $(".post-" + key).remove();
+
+        // delete card entry from mainData & save it to local storage
+        delete mainData[key];
+        saveContents();
+    }
+}
+
+// single card list add button
+function addSingleCardItemButton(key) {
+    $(document).ready(function () {
+        $('#add-single-card-item-' + key).click(addSingleCardItem(key));
+    });
+}
+
+function addSingleCardItem(key) {
+    return function () {
+        // default value
+        var defaultItemContent = {
+            value: "",
+            done: false,
+        };
+
+        if (Object.keys(mainData[key]["items"]).length == 0) {
+            var nextItem = 0;
+        } else {
+            // last item of mainData
+            var last_item = null;
+            for (item in mainData[key]["items"]) {
+                last_item = item;
+            }
+
+            var nextItem = parseInt(item) + 1;
+        }
+
+        mainData[key]["items"][nextItem] = defaultItemContent;
+
+        // add new card with a default value
+        addCardItem(key, nextItem);
+
+        saveContents();
+    }
+}
+
+// single card title
+function updateSingleCardTitleButton(key) {
+    $(document).ready(function () {
+        $('#input-title-' + key).keyup(updateSingleCardTitle(key));
+    });
+}
+
+// update title
+function updateSingleCardTitle(key) {
+    return function () {
+        // get title from card
+        var cardTitle = $('#input-title-' + key).val();
+
+        // update mainData
+        mainData[key]['title'] = cardTitle;
+
+        // save mainData
+        saveContents();
+    }
+}
+
+// update card item
+function updateCardItemButton(key, item) {
+    $(document).ready(function () {
+        $("#update-card-" + key + "-item-" + item).click(updateCardItem(key, item));
+    });
+}
+
+function updateCardItem(key, item) {
+    return function () {
+        var itemChecked = mainData[key]["items"][item]["done"];
+        var labelId = "#value-card-" + key + "-item-" + item
+
+        // switch html checked
+        if (itemChecked) {
+            $(labelId).removeClass("list-item-select");
+        } else {
+            $(labelId).addClass("list-item-select");
+        }
+
+        // switch checked status in mainData
+        mainData[key]["items"][item]["done"] = !mainData[key]["items"][item]["done"];
+
+        // save mainData to localStorage
+        saveContents();
+    }
+}
+
+// delete card item
+function deleteCardItemButton(key, item) {
+    $(document).ready(function () {
+        $("#delete-card-" + key + "-item-" + item).click(deleteCardItem(key, item));
+    });
+}
+
+function deleteCardItem(key, item) {
+    return function () {
+        // remove item
+        $(".card-" + key + "-item-" + item).remove();
+
+        // delete item
+        delete mainData[key]["items"][item];
+
+        // save mainData
+        saveContents();
+    }
+}
+
+// update title card item
+function updateSingleCardItemTitleButton(key, item) {
+    $(document).ready(function () {
+        var itemId = "#value-card-" + key + "-item-" + item;
+        $(itemId).keyup(updateSingleCardItemTitle(key, item));
+    });
+}
+
+// update title
+function updateSingleCardItemTitle(key, item) {
+    return function () {
+        // get title from card
+        var itemId = "#value-card-" + key + "-item-" + item;
+        var itemValue = $(itemId).val();
+
+        // update mainData
+        mainData[key]["items"][item]["value"] = itemValue;
+
+        // save mainData
+        saveContents();
+    }
+}
+
+
 // run at script start
 
 // create cards with saved content
 createMutipleCards();
-
