@@ -63,12 +63,12 @@ function addCard(id, cardContent) {
         "    </div>\n" +
         "    <div class=\"row\">\n" +
         "        <div class=\"col-xs-6 center\">\n" +
-        "            <a href=\"#\" id='add-single-card-item-"+id+"' class=\"btn btn-primary\">\n" +
+        "            <a id='add-single-card-item-"+id+"' class=\"btn btn-primary\">\n" +
         "                <span class=\"glyphicon glyphicon-plus\"></span> ADD\n" +
         "            </a>\n" +
         "        </div>\n" +
         "        <div class=\"col-xs-6 center\">\n" +
-        "            <a href=\"#\" id=\"delete-single-card-" + id + "\" class=\"btn btn-danger\">\n" +
+        "            <a id=\"delete-single-card-" + id + "\" class=\"btn btn-danger\">\n" +
         "                <span class=\"glyphicon glyphicon-minus\"></span> DELETE\n" +
         "            </a>\n" +
         "        </div>\n" +
